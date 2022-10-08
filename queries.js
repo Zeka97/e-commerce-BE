@@ -103,8 +103,13 @@ exports.artikliQueries = {
     });
   },
   getOneCategoryArticles: (req, res, next) => {
+    console.log(req);
     pool.query(
-      "select * from artikli where kategorija_id = $1",
+      `select artikli.id as artikal_id, artikli.naziv as naziv,k.id as k_id,k.naziv as kategorija_naziv,artikli.photo,ad.cijena,sum(ad.kolicina) as max_kolicina from artikli
+      inner join artikli_details ad on artikli.id = ad.id
+      inner join kategorije k on artikli.kategorija_id = k.id
+      where LOWER(artikli.naziv) like '%${req.query.searchValue.toLowerCase()}% AND k.id = $1'
+  group by  ad.id, artikli.id, ad.cijena, k.id, artikli.photo, k.naziv, artikli.naziv;`,
       [req.params.id],
       (err, result) => {
         if (err) {
