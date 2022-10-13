@@ -12,3 +12,9 @@ export const getAllArticles = async (params) => {
 
   return result;
 };
+
+export const getArticle = async (params) => {
+  const result = await model.getArticle(params);
+
+  return result[0];
+};
