@@ -19,7 +19,7 @@ export const getAllArticles = async (params) => {
         ]);
       if (params.kategorija_id)
         QueryBuilder.andWhere("k.id", "=", params.kategorija_id);
-      if (params.discount) QueryBuilder.whereNotNull("akcijska_cijena");
+      if (params.discount) QueryBuilder.andWhereNot("akcijska_cijena", null);
       if (params.popular)
         QueryBuilder.orderBy("broj_prodanih", "desc").where(
           "broj_prodanih",
@@ -27,10 +27,15 @@ export const getAllArticles = async (params) => {
           0
         );
       if (params.priceRange)
-        QueryBuilder.andWhereBetween(
-          "cijena",
-          params.priceRange
-        ).orWhereBetween("akcijska_cijena", params.priceRange);
+        QueryBuilder.andWhereRaw(
+          "cijena >= ? and cijena <= ? or akcijska_cijena >= ? and akcijska_cijena <= ?",
+          [
+            params.priceRange[0],
+            params.priceRange[1],
+            params.priceRange[0],
+            params.priceRange[1],
+          ]
+        );
     })
     .limit(params.limit);
   return result;
