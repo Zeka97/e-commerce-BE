@@ -28,7 +28,7 @@ export const getAllArticles = async (params) => {
         );
       if (params.priceRange)
         QueryBuilder.andWhereRaw(
-          "cijena >= ? and cijena <= ? or akcijska_cijena >= ? and akcijska_cijena <= ?",
+          "(cijena >= ? and cijena <= ? or akcijska_cijena >= ? and akcijska_cijena <= ?)",
           [
             params.priceRange[0],
             params.priceRange[1],
@@ -50,7 +50,8 @@ export const getArticle = async (params) => {
       "cijena",
       "max_kolicina",
       "akcijska_cijena",
-      "k.naziv as kategorija_naziv"
+      "k.naziv as kategorija_naziv",
+      "artikli.visibility as visibility"
     )
     .innerJoin("kategorije as k", "artikli.kategorija_id", "k.id")
     .where("artikli.id", "=", params.id);

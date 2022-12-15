@@ -19,9 +19,9 @@ export const checkAdminLogin = async (params) => {
 
 export const registerUser = async (params) => {
   const result = await model.checkIfUserExists(params);
-  if (!result.length) {
+  if (!result.length && params.username !== "admin") {
     const register = await model.registerUser(params);
     return register;
-  }
-  return false;
+  } else
+    throw { message: "Postoji user sa trenutnim username-om ili email-om" };
 };

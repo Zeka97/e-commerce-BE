@@ -1,6 +1,8 @@
+import bcrypt from "bcrypt";
 import knex from "../../db.js";
 
 export const listaNarudzbi = async (params) => {
+  console.log("params", params);
   const result = await knex("narudzbe")
     .select(
       "narudzbe.id as id",
@@ -94,4 +96,55 @@ export const kreirajNarudzbu = async (params) => {
     .where("id", "=", params.user_id);
 
   return updateUser;
+};
+
+export const updateUserProfile = async (params) => {
+  console.log(params);
+
+  const { password, ...values } = params.values;
+
+  console.log("values", values);
+
+  const user = await knex("users").select().where("id", "=", params.id);
+
+  const passwordCorrect = bcrypt.compareSync(password, user[0].password);
+  if (passwordCorrect) {
+    const result = await knex("users")
+      .where("id", "=", params.id)
+      .update(values);
+
+    const updatedUser = await knex("users")
+      .select()
+      .where("id", "=", params.id);
+
+    return updatedUser[0];
+  }
+
+  throw { message: "Pogresna sifra" };
+};
+
+export const changePassword = async (params) => {
+  const [{ password }] = await knex("users")
+    .select("password")
+    .where("id", "=", params.userId);
+
+  console.log(password);
+
+  console.log(params.values.currentPassword);
+
+  const isPasswordCorrect = bcrypt.compareSync(
+    params.values.currentPassword,
+    password
+  );
+
+  if (isPasswordCorrect) {
+    const newPassword = bcrypt.hashSync(params.values.newPassword, 10);
+    const result = await knex("users")
+      .where("id", "=", params.userId)
+      .update({ password: newPassword });
+
+    return result;
+  } else {
+    throw { message: "Unijeli ste pogresnu trenutnu sifru!" };
+  }
 };

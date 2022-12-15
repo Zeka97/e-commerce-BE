@@ -8,6 +8,7 @@ import indexRouter from "./routes/loginandregister/index.js";
 import usersRouter from "./routes/users/index.js";
 import artikliRouter from "./routes/artikli/index.js";
 import kategorijeRouter from "./routes/kategorije/index.js";
+import adminRouter from "./routes/admin/index.js";
 
 const app = express();
 
@@ -29,5 +30,6 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/artikli", artikliRouter);
 app.use("/kategorije", kategorijeRouter);
+app.use("/admin", adminRouter);
 
 export default app;

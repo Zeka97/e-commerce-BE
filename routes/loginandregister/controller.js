@@ -11,19 +11,18 @@ export const checkLogin = async (req, res, next) => {
     return res.status(500).send({ message: "User ne postoji" });
   } catch (e) {
     console.log(e);
-    next(e);
+    return res.status(500).send(e);
   }
 };
 
 export const registerUser = async (req, res, next) => {
   try {
-    let params = req.body;
-    console.log(params);
+    const params = req.body.params;
     const result = await service.registerUser(params);
     if (result) return res.sendStatus(200);
     else return res.sendStatus(500);
   } catch (e) {
     console.log(e);
-    next(e);
+    return res.status(500).send(e);
   }
 };
