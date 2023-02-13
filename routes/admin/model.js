@@ -20,6 +20,24 @@ export const getAllTransactions = async (params) => {
         QueryBuilder.andWhere("narudzbe.datum_narudzbe", ">=", params.dateFrom);
       if (params.dateTo)
         QueryBuilder.andWhere("narudzbe.datum_narudzbe", "<=", params.dateTo);
+      if (params.customer) {
+        const customer = params.customer.split(" ");
+        if (customer[0]) {
+          QueryBuilder.andWhereRaw("upper(u.ime) LIKE ?", [
+            `%${customer[0].toUpperCase()}%`,
+          ]);
+        }
+        if (customer[1]) {
+          QueryBuilder.andWhereRaw("upper(u.prezime) LIKE ?", [
+            `%${customer[1].toUpperCase()}`,
+          ]);
+        }
+      }
+      if (params.city) {
+        QueryBuilder.andWhereRaw("upper(u.grad) LIKE ?", [
+          `%${params.city.toUpperCase()}%`,
+        ]);
+      }
     })
     .offset(params.offset)
     .limit(params.limit)
@@ -51,5 +69,75 @@ export const setArticleOutOfStock = async (params) => {
     .update({ max_kolicina: 0 })
     .where("id", "=", params.id);
 
+  return result;
+};
+
+export const updateArticleDiscountPrice = async (params) => {
+  const result = await knex("artikli")
+    .update({ akcijska_cijena: params.discount })
+    .where("id", "=", params.id);
+
+  return result;
+};
+
+export const removeArticleDiscountPrice = async (params) => {
+  const result = await knex("artikli")
+    .update({ akcijska_cijena: null })
+    .where("id", "=", params.id);
+
+  return result;
+};
+
+export const editArticle = async (params) => {
+  const result = await knex("artikli")
+    .update({
+      naziv: params.values.articleName,
+      cijena: params.values.articlePrice,
+      max_kolicina: params.values.articleQuantity,
+      description: params.values.articleDescription,
+    })
+    .where("id", "=", params.id);
+
+  return result;
+};
+
+export const addNewCategory = async (params) => {
+  const result = await knex("kategorije").insert({
+    naziv: params.categoryName,
+    photo: params.categoryPicture,
+  });
+
+  return result;
+};
+
+export const updateCategory = async (params) => {
+  const result = await knex("kategorije")
+    .update({
+      naziv: params.values.categoryName,
+      photo: params.values.categoryPicture,
+    })
+    .where("id", "=", params.id);
+
+  return result;
+};
+
+export const getAllUsers = async (params) => {
+  const result = await knex("users")
+    .select(
+      "id",
+      "email",
+      "username",
+      "potrosen_novac",
+      "block_timestamp",
+      "blocked_forever",
+      "createdat",
+      "slika",
+      "grad",
+      "telefon",
+      "adresa",
+      knex.raw("CONCAT(ime,' ',prezime) as ime_i_prezime")
+    )
+    .offset(params.offset)
+    .limit(params.limit);
   return result;
 };

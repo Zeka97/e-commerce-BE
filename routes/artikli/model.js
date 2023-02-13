@@ -37,6 +37,7 @@ export const getAllArticles = async (params) => {
           ]
         );
     })
+    .offset(params.offset)
     .limit(params.limit);
   return result;
 };
@@ -47,6 +48,7 @@ export const getArticle = async (params) => {
       "artikli.id as id",
       "artikli.naziv as naziv",
       "artikli.photo as photo",
+      "artikli.description",
       "cijena",
       "max_kolicina",
       "akcijska_cijena",
