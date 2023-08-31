@@ -53,6 +53,7 @@ export const getArticle = async (params) => {
       "max_kolicina",
       "akcijska_cijena",
       "k.naziv as kategorija_naziv",
+      "k.id as kategorija_id",
       "artikli.visibility as visibility"
     )
     .innerJoin("kategorije as k", "artikli.kategorija_id", "k.id")

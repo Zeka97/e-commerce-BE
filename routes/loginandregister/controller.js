@@ -3,7 +3,6 @@ import * as service from "./service.js";
 export const checkLogin = async (req, res, next) => {
   try {
     let params = req.body.params;
-    console.log(params);
     const user = await service.checkUserLogin(params);
     if (user) return res.status(200).send({ user: user });
     const admin = await service.checkAdminLogin(params);

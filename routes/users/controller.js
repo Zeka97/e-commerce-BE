@@ -15,10 +15,10 @@ export const kreirajNarudzbu = async (req, res, next) => {
   try {
     const params = req.body.params;
     console.log(params);
-    const result = service.kreirajNarudzbu(params);
-    return res.status(200).send(result);
+    const result = await service.kreirajNarudzbu(params);
+    return res.sendStatus(200);
   } catch (err) {
-    return res.status(500).send(err);
+    return res.sendStatus(500);
   }
 };
 

@@ -16,7 +16,6 @@ export const getAllTransactions = async (params) => {
     offset: (params.page - 1) * params.limit,
     limit: params.limit,
   });
-  console.log(total, rows);
 
   return { total, rows };
 };
@@ -77,4 +76,16 @@ export const getAllUsers = async (params) => {
   });
 
   return { rows: data, total: totalItems.length };
+};
+
+export const getUserDetails = async (id) => {
+  const data = await model.getUserDetails(id);
+
+  return data;
+};
+
+export const getStatistic = async () => {
+  const data = await model.getStatistic();
+
+  return data;
 };

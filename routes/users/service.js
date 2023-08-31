@@ -22,7 +22,7 @@ export const listaNarudzbi = async (params) => {
 };
 
 export const kreirajNarudzbu = async (params) => {
-  const result = model.kreirajNarudzbu(params);
+  const result = await model.kreirajNarudzbu(params);
   return result;
 };
 
@@ -36,5 +36,4 @@ export const changePassword = async (params) => {
   const result = await model.changePassword(params);
 
   return result;
-
-}
+};

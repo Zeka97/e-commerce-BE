@@ -15,7 +15,6 @@ export const getAllTransactions = async (req, res, next) => {
 export const changeArticleVisibility = async (req, res, next) => {
   try {
     const params = req.body.params;
-    console.log(params);
     const result = await service.changeArticleVisibility(params);
     return res.sendStatus(200);
   } catch (err) {
@@ -38,7 +37,6 @@ export const setArticleOutOfStock = async (req, res, next) => {
 export const updateArticleDiscountPrice = async (req, res, next) => {
   try {
     const params = req.body.params;
-    console.log(params);
     const result = await service.updateArticleDiscountPrice(params);
     return res.sendStatus(200);
   } catch (err) {
@@ -94,8 +92,28 @@ export const updateCategory = async (req, res, next) => {
 export const getAllUsers = async (req, res, next) => {
   try {
     const params = req.query;
-    console.log(params);
     const result = await service.getAllUsers(params);
+    return res.status(200).send(result);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send(err);
+  }
+};
+
+export const getUserDetails = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await service.getUserDetails(id);
+    return res.status(200).send(result);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send(err);
+  }
+};
+
+export const getStatistic = async (req, res, next) => {
+  try {
+    const result = await service.getStatistic();
     return res.status(200).send(result);
   } catch (err) {
     console.log(err);

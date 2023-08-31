@@ -19,4 +19,6 @@ router.post("/editArticle", controller.editArticle);
 router.post("/addNewCategory", controller.addNewCategory);
 router.post("/updateCategory", controller.updateCategory);
 router.get("/getAllUsers", controller.getAllUsers);
+router.get("/getUserDetails/:id", controller.getUserDetails);
+router.get("/statistics", controller.getStatistic);
 export default router;
