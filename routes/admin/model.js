@@ -141,3 +141,8 @@ export const getAllUsers = async (params) => {
     .limit(params.limit);
   return result;
 };
+
+export const blockUser = async (id) => {
+
+  await knex("users").update({blocked_forever: knex.raw("NOT blocked_forever")}).where('id','=', id);
+}

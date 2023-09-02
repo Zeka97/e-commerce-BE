@@ -78,3 +78,8 @@ export const getAllUsers = async (params) => {
 
   return { rows: data, total: totalItems.length };
 };
+
+
+export const blockUser = async (id) => {
+  await model.blockUser(id);
+}

@@ -41,33 +41,40 @@ export const listaNarudzbi = async (params) => {
 };
 
 export const kreirajNarudzbu = async (params) => {
-  const result = await knex("narudzbe")
-    .insert({ user_id: params.user_id, ukupna_cijena: params.ukupna })
-    .returning("id");
+  let tsx;
 
-  // Povezivanje narudzbe_id sa artiklima
-  for (let i = 0; i < params.artikli.length; i++) {
-    params.artikli[i].narudzba_id = result[0].id;
-  }
+  try {
+    tsx = await knex.transaction();
 
-  const addArtikli = await knex("artikli_narudzbe").insert(params.artikli);
+    const [nardudzbaID] = await tsx("narudzbe")
+      .insert({ user_id: params.user_id, ukupna_cijena: params.ukupna })
+      .returning("id");
 
-  await knex.transaction(async (trx) => {
+    console.log("narudzba_id: ", nardudzbaID);
+
+    console.log("artikli", params.artikli);
+
+    // Povezivanje narudzbe_id sa artiklima
     for (let i = 0; i < params.artikli.length; i++) {
-      // id artikla iz korpe //
-      let id_artikla = await knex("artikli")
-        .select("id")
-        .andWhere("naziv", "=", params.artikli[i].naziv)
-        .andWhere("cijena", "=", params.artikli[i].cijena)
-        .transacting(trx);
+      params.artikli[i].narudzba_id = nardudzbaID.id;
+    }
 
-      console.log(id_artikla);
+    const addArtikli = await tsx("artikli_narudzbe").insert(params.artikli);
+
+    for (let i = 0; i < params.artikli.length; i++) {
+      console.log(params.artikli[i].naziv);
+      console.log(params.artikli[i].cijena);
+      // id artikla iz korpe //
+      let id_artikla = await tsx("artikli")
+        .select("id")
+        .where("naziv", "=", params.artikli[i].naziv);
+
+      console.log("asd", id_artikla);
 
       // Broj prodanih se update-a iz baze za vrijednost kolicine novog artikla iz korpe
-      let artikal = await knex("artikli")
+      let artikal = await tsx("artikli")
         .select("broj_prodanih", "max_kolicina")
-        .where("id", "=", id_artikla[0].id)
-        .transacting(trx);
+        .where("id", "=", id_artikla[0].id);
 
       let broj_prodanih = artikal[0].broj_prodanih + params.artikli[i].kolicina;
       let new_max = artikal[0].max_kolicina - params.artikli[i].kolicina;
@@ -75,27 +82,28 @@ export const kreirajNarudzbu = async (params) => {
 
       console.log("br_prodanih", broj_prodanih);
 
-      await knex("artikli")
-        .where({ id: id_artikla[0].id })
-        .update({
-          max_kolicina: new_max,
-          broj_prodanih: broj_prodanih,
-        })
-        .transacting(trx);
+      await tsx("artikli").where({ id: id_artikla[0].id }).update({
+        max_kolicina: new_max,
+        broj_prodanih: broj_prodanih,
+      });
     }
-  });
 
-  const staraPotrosnja = await knex("users")
-    .select("potrosen_novac")
-    .where("id", "=", params.user_id);
+    const staraPotrosnja = await knex("users")
+      .select("potrosen_novac")
+      .where("id", "=", params.user_id);
 
-  const updateUser = await knex("users")
-    .update({
-      potrosen_novac: staraPotrosnja[0].potrosen_novac + params.ukupna,
-    })
-    .where("id", "=", params.user_id);
+    const updateUser = await knex("users")
+      .update({
+        potrosen_novac: staraPotrosnja[0].potrosen_novac + params.ukupna,
+      })
+      .where("id", "=", params.user_id);
 
-  return updateUser;
+    await tsx.commit();
+  } catch (err) {
+    if (tsx) await tsx.rollback();
+    console.log(err);
+    throw err;
+  }
 };
 
 export const updateUserProfile = async (params) => {

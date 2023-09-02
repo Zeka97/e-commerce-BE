@@ -1,17 +1,24 @@
 import * as service from "./service.js";
 
 export const checkLogin = async (req, res, next) => {
-  try {
     let params = req.body.params;
-    console.log(params);
-    const user = await service.checkUserLogin(params);
-    if (user) return res.status(200).send({ user: user });
-    const admin = await service.checkAdminLogin(params);
-    if (admin) return res.status(200).send({ admin: admin });
-    return res.status(500).send({ message: "User ne postoji" });
-  } catch (e) {
-    console.log(e);
-    return res.status(500).send(e);
+    if(params.username == 'admin'){
+      try{
+      const admin = await service.checkAdminLogin(params);
+      return res.status(200).send({admin: admin});
+      }
+      catch(error){
+        return res.status(500).send(error);
+      }
+    }
+    else{
+      try{
+      const user = await service.checkUserLogin(params);
+      return res.status(200).send({user: user});
+    }
+    catch(error){
+      return res.status(500).send(error);
+    }
   }
 };
 

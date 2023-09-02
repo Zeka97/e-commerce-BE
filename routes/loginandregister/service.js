@@ -3,18 +3,27 @@ import bcrypt from "bcrypt";
 
 export const checkUserLogin = async (params) => {
   const user = await model.checkUserLogin(params);
-  if (user.length) {
-    if (bcrypt.compareSync(params.password, user[0].password)) return user[0];
+  console.log(user);
+  console.log(user.blocked_forever);
+  if (user) {
+    if(user.blocked_forever === true) {
+      throw {message: 'Your account has been blocked by admin'};
+    }
+    else if (bcrypt.compareSync(params.password, user.password)) return user;
+    else throw {message: "Incorrect password!"};
   }
-  return false;
+  else{
+    throw {message: "Incorrect username or email"};
+  }
 };
 
 export const checkAdminLogin = async (params) => {
   const admin = await model.checkAdminLogin(params);
-  if (admin.length) {
-    if (params.password == admin[0].password) return admin[0];
+  if (admin) {
+    if (params.password == admin.password) return admin;
+    else throw {message: "incorrect password"};
   }
-  return false;
+  else throw {message: "Incorrect username or email"};
 };
 
 export const registerUser = async (params) => {

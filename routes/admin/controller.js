@@ -102,3 +102,16 @@ export const getAllUsers = async (req, res, next) => {
     return res.status(500).send(err);
   }
 };
+
+export const blockUser = async(req,res,next) => {
+  try{
+    const {id} = req.params;
+    console.log(id);
+    await service.blockUser(id);
+    return res.sendStatus(200);
+  }
+  catch(err){
+    console.log(err);
+    return res.sendStatus(500);
+  }
+}

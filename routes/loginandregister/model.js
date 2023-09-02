@@ -2,14 +2,14 @@ import knex from "../../db.js";
 import bcrypt from "bcrypt";
 
 export const checkUserLogin = async (params) => {
-  const result = await knex("users")
+  const [result] = await knex("users")
     .select()
     .where("users.username", "=", params.username);
 
   return result;
 };
 export const checkAdminLogin = async (params) => {
-  const result = await knex("admin")
+  const [result] = await knex("admin")
     .select()
     .where("admin.username", "=", params.username);
 
