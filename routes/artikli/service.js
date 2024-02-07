@@ -22,7 +22,7 @@ export const getAllArticles = async (params) => {
     kategorija_id: params.kategorija_id || null,
     discount: params.discount || null,
     popular: params.popular || null,
-    offset: params.page * params.limit,
+    offset: (params.page -1) * params.limit,
   });
 
   return { total, articles: result };
