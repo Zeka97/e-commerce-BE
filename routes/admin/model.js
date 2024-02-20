@@ -165,6 +165,7 @@ export const getStatistic = async () => {
   const [thisMonthEarnings] = await knex("narudzbe")
     .sum("ukupna_cijena")
     .where("datum_narudzbe", ">=", currentDate);
+
   const [thisMonthNewUsers] = await knex("users")
     .count("*")
     .where("createdat", ">=", currentDate);
@@ -190,11 +191,12 @@ export const getStatistic = async () => {
   if (lastMonthNumberOfTransactions.count == 0)
     lastMonthNumberOfTransactions.count = 1;
 
-  if (lastMonthEarnings.sum == 0) lastMonthEarnings.sum = 1;
+  if (lastMonthEarnings.sum == 0 || lastMonthEarnings.sum == null)
+    lastMonthEarnings.sum = 1;
 
   if (lastMonthNewUsers.count == 0) lastMonthNewUsers.count = 1;
 
-  console.log(thisMonthNumberOfTransactions, lastMonthNumberOfTransactions);
+  console.log(lastMonthEarnings);
 
   let lastMonthEarningsPercentage =
     ((thisMonthEarnings.sum - lastMonthEarnings.sum) / lastMonthEarnings.sum) *
