@@ -63,6 +63,10 @@ export const changeArticleVisibility = async (params) => {
   return result;
 };
 
+export const deleteArticle = async (id) => {
+  await knex("artikli").del().where("id", "=", id);
+};
+
 export const setArticleOutOfStock = async (params) => {
   const result = await knex("artikli")
     .update({ max_kolicina: 0 })
@@ -94,7 +98,7 @@ export const editArticle = async (params) => {
       cijena: params.values.articlePrice,
       max_kolicina: params.values.articleQuantity,
       description: params.values.articleDescription,
-      kategorija_id: params.values.articleCategory, 
+      kategorija_id: params.values.articleCategory,
     })
     .where("id", "=", params.id);
 
@@ -214,4 +218,15 @@ export const getStatistic = async () => {
     lastMonthNumberOfTransactionsPercentage:
       lastMonthNumberOfTransactionsPercentage.toFixed(2),
   };
+};
+
+export const addArticle = async (params) => {
+  await knex("artikli").insert({
+    naziv: params.articleName,
+    kategorija_id: params.articleCategory,
+    photo: params.articlePhoto,
+    cijena: params.articlePrice,
+    max_kolicina: params.articleQuantity,
+    description: params.articleDescription,
+  });
 };

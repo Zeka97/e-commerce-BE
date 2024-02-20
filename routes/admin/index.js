@@ -21,4 +21,6 @@ router.post("/updateCategory", controller.updateCategory);
 router.get("/getAllUsers", controller.getAllUsers);
 router.get("/getUserDetails/:id", controller.getUserDetails);
 router.get("/statistics", controller.getStatistic);
+router.delete("/article/:id", controller.deleteArticle);
+router.post("/addArticle", controller.addArticle);
 export default router;

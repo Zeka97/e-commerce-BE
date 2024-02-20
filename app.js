@@ -3,6 +3,7 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import dotenv from "dotenv";
+import cors from "cors";
 
 import indexRouter from "./routes/loginandregister/index.js";
 import usersRouter from "./routes/users/index.js";
@@ -12,6 +13,7 @@ import adminRouter from "./routes/admin/index.js";
 
 const app = express();
 
+app.use(cors());
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(

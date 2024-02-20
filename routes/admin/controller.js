@@ -120,3 +120,26 @@ export const getStatistic = async (req, res, next) => {
     return res.status(500).send(err);
   }
 };
+
+export const deleteArticle = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+    await service.deleteArticle(id);
+    return res.sendStatus(200);
+  } catch (err) {
+    console.log(err);
+    return res.sendStatus(500);
+  }
+};
+
+export const addArticle = async (req, res, next) => {
+  try {
+    const params = req.body;
+    await service.addArticle(params);
+    return res.sendStatus(200);
+  } catch (err) {
+    console.log(err);
+    return res.sendStatus(500);
+  }
+};

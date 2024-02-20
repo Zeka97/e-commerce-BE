@@ -89,3 +89,11 @@ export const getStatistic = async () => {
 
   return data;
 };
+
+export const deleteArticle = async (id) => {
+  await model.deleteArticle(id);
+};
+
+export const addArticle = async (params) => {
+  await model.addArticle(params);
+};
