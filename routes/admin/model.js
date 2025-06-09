@@ -188,33 +188,37 @@ export const getStatistic = async () => {
     .count("*")
     .whereBetween("datum_narudzbe", [lastMonth, currentDate]);
 
-  if (lastMonthNumberOfTransactions.count == 0)
-    lastMonthNumberOfTransactions.count = 1;
+  let lastMonthEarningsPercentage = 0;
+  let lastMonthNewUsersPercentage = 0;
+  let lastMonthNumberOfTransactionsPercentage = 0;
 
-  if (lastMonthEarnings.sum == 0 || lastMonthEarnings.sum == null)
-    lastMonthEarnings.sum = 1;
+  // Only calculate percentages if there was activity last month
+  if (lastMonthEarnings.sum > 0) {
+    lastMonthEarningsPercentage =
+      ((thisMonthEarnings.sum - lastMonthEarnings.sum) /
+        lastMonthEarnings.sum) *
+      100;
+  }
 
-  if (lastMonthNewUsers.count == 0) lastMonthNewUsers.count = 1;
+  if (lastMonthNewUsers.count > 0) {
+    lastMonthNewUsersPercentage =
+      ((thisMonthNewUsers.count - lastMonthNewUsers.count) /
+        lastMonthNewUsers.count) *
+      100;
+  }
 
-  console.log(lastMonthEarnings);
-
-  let lastMonthEarningsPercentage =
-    ((thisMonthEarnings.sum - lastMonthEarnings.sum) / lastMonthEarnings.sum) *
-    100;
-  let lastMonthNewUsersPercentage =
-    ((thisMonthNewUsers.count - lastMonthNewUsers.count) /
-      lastMonthNewUsers.count) *
-    100;
-  let lastMonthNumberOfTransactionsPercentage =
-    ((thisMonthNumberOfTransactions.count -
-      lastMonthNumberOfTransactions.count) /
-      lastMonthNumberOfTransactions.count) *
-    100;
+  if (lastMonthNumberOfTransactions.count > 0) {
+    lastMonthNumberOfTransactionsPercentage =
+      ((thisMonthNumberOfTransactions.count -
+        lastMonthNumberOfTransactions.count) /
+        lastMonthNumberOfTransactions.count) *
+      100;
+  }
 
   return {
-    totalEarnings: totalEarnings.sum,
-    numberOfUsers: totalNumberOfUsers.count,
-    numberOfTransactions: totalNumberOfTransactions.count,
+    totalEarnings: totalEarnings.sum || 0,
+    numberOfUsers: totalNumberOfUsers.count || 0,
+    numberOfTransactions: totalNumberOfTransactions.count || 0,
     lastMonthEarningsPercentage: lastMonthEarningsPercentage.toFixed(2),
     lastMonthNewUsersPercentage: lastMonthNewUsersPercentage.toFixed(2),
     lastMonthNumberOfTransactionsPercentage:
