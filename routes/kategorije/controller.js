@@ -6,7 +6,6 @@ export const getAllCategories = async (req, res, next) => {
     const result = await service.getAllCategories(params);
     return res.status(200).send(result);
   } catch (e) {
-    console.log(e);
     next(e);
   }
 };

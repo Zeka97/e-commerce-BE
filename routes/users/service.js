@@ -16,7 +16,6 @@ export const listaNarudzbi = async (params) => {
     offset: (params.page - 1) * params.limit,
     limit: params.limit,
   });
-  console.log(total, rows);
 
   return { total, rows };
 };

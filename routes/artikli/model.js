@@ -1,4 +1,6 @@
 import knex from "../../db.js";
+import path from "path";
+import fs from "fs";
 
 export const getAllArticles = async (params) => {
   const result = await knex("artikli")

@@ -1,5 +1,11 @@
 import moment from "moment";
 import knex from "../../db.js";
+import {
+  uploadFile,
+  saveBase64Image,
+  deleteImage,
+} from "../../utils/fileUpload.js";
+import path from "path";
 
 export const getAllTransactions = async (params) => {
   const result = await knex("narudzbe")
@@ -92,20 +98,57 @@ export const removeArticleDiscountPrice = async (params) => {
 };
 
 export const editArticle = async (params) => {
-  const result = await knex("artikli")
-    .update({
-      naziv: params.values.articleName,
-      cijena: params.values.articlePrice,
-      max_kolicina: params.values.articleQuantity,
-      description: params.values.articleDescription,
-      kategorija_id: params.values.articleCategory,
-    })
-    .where("id", "=", params.id);
+  console.log(params);
+  try {
+    const updateData = {
+      naziv: params.articleName,
+      cijena: params.articlePrice,
+      max_kolicina: params.articleQuantity,
+      description: params.articleDescription,
+      kategorija_id: params.articleCategory,
+    };
 
-  return result;
+    // If there's a new photo in base64 format
+    if (params.articlePhoto && params.articlePhoto.startsWith("data:image")) {
+      const filename = `articlePhoto-${Date.now()}-${Math.round(
+        Math.random() * 1e9
+      )}.png`;
+      const photoPath = await saveBase64Image(params.articlePhoto, filename);
+      updateData.photo = photoPath;
+    } else if (!params.articlePhoto) {
+      const [image] = await knex("artikli")
+        .select("photo")
+        .where("id", "=", params.id);
+      if (image.photo) {
+        await deleteImage(image.photo);
+        await knex("artikli")
+          .update({ photo: null })
+          .where("id", "=", params.id);
+      }
+    }
+
+    const result = await knex("artikli")
+      .update(updateData)
+      .where("id", "=", params.id);
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const addNewCategory = async (params) => {
+  console.log(params);
+  if (
+    params.categoryPicture &&
+    params.categoryPicture.startsWith("data:image")
+  ) {
+    const filename = `categoryPhoto-${Date.now()}-${Math.round(
+      Math.random() * 1e9
+    )}.png`;
+    const photoPath = await saveBase64Image(params.categoryPicture, filename);
+    params.categoryPicture = photoPath;
+  }
   const result = await knex("kategorije").insert({
     naziv: params.categoryName,
     photo: params.categoryPicture,
@@ -115,10 +158,31 @@ export const addNewCategory = async (params) => {
 };
 
 export const updateCategory = async (params) => {
+  console.log("asd", params);
+  if (
+    params.categoryPicture &&
+    params.categoryPicture.startsWith("data:image")
+  ) {
+    const filename = `categoryPhoto-${Date.now()}-${Math.round(
+      Math.random() * 1e9
+    )}.png`;
+    const photoPath = await saveBase64Image(params.categoryPicture, filename);
+    params.categoryPicture = photoPath;
+  } else if (!params.categoryPicture) {
+    const [image] = await knex("kategorije")
+      .select("photo")
+      .where("id", "=", params.id);
+    if (image.photo) {
+      await deleteImage(image.photo);
+      await knex("kategorije")
+        .update({ photo: null })
+        .where("id", "=", params.id);
+    }
+  }
   const result = await knex("kategorije")
     .update({
-      naziv: params.values.categoryName,
-      photo: params.values.categoryPicture,
+      naziv: params.categoryName,
+      photo: params.categoryPicture,
     })
     .where("id", "=", params.id);
 
